@@ -10,8 +10,6 @@ saveRegex=/^save *["'](.*)["'] *["'](.*)["']$/;
 lmgtfyRegex=/^lmgtfy  *(.*)$/
 
 
-//TODO: add a function to escape regex
-
 //Not in use but could be useful when 
 //removeRegex=/^remove \'(.*)\'$/
 
@@ -37,14 +35,27 @@ function getResponse(user){
 	return catchPhrases[user]['response']
 }
 
+//function to escape regex special characters
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+//Clean input function add any input cleaning needed here
+function cleanCatchPhrase(input){
+	var cleaned_input=input
+	cleaned_input=escapeRegExp(cleaned_input)
+	return cleaned_input
+}
 //Sets catchphrase and saves new catch phrase to memory
 function setCatchPhraseAndResponse(user,catchPhrase,response){
 	console.log(`Setting catchPhrase/response for ${user} to ${catchPhrase} / ${response}`)
-	catchResponse={}
-	catchResponse['catchPhrase']=catchPhrase
-	catchResponse['response']=response
-	catchPhrases[user]=catchResponse
-	saveFile()
+	catchResponse={};
+	catchResponse['catchPhrase']=cleanCatchPhrase(catchPhrase);
+	catchResponse['response']=response;
+	console.log(catchResponse)
+	catchPhrases[user]=catchResponse;
+
+	saveFile();
 
 }
 
@@ -55,19 +66,34 @@ function removeCatchPhrase(user){
 	saveFile()
 }
 
+//Add methods to prevent spam here
+//Should return false if we believe the user is spamming
+function isNotSpam(user){
+	var notSpam=true
+	return notSpam;
+}
+
 //Function to be called on exit to save the current catchPhrases to memory 
 function exitHandler() {
 	console.log("Saved File on Close")
     saveFile()
     
 }
+
+function sendCatchPhrase(user,channel){		
+	
+	console.log(`Sending the response to ${user}`) 
+	channel.send(getResponse(user))
+	
+}
+
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
 	catchPhrases=readFile()
 });
 
 client.on('message', msg => {
-	let author=msg.author.id;
+	let user=msg.author.id;
 	if( msg.content.substring(0,1)===command_char){
 		var cmd=msg.content.substring(1).trim()
 		
@@ -75,11 +101,11 @@ client.on('message', msg => {
 			let match=saveRegex.exec(cmd);
 			console.log('setCatchPhraseAndResponse')
 			//save catch phrase
-			setCatchPhraseAndResponse(author,match[1],match[2])
+			setCatchPhraseAndResponse(user,match[1],match[2])
 		}
 		else if(cmd==="remove"){
 			//remove user and catch phrase
-			removeCatchPhrase(author)
+			removeCatchPhrase(user)
 		}
 		else if(lmgtfyRegex.test(cmd)){
 			console.log(cmd)
@@ -87,11 +113,11 @@ client.on('message', msg => {
 			msg.channel.send(`http://lmgtfy.com/?q=${encodeURI(match[1])}`)
 		}
 	}
-	else if (catchPhrases[author]!=null){
+	else if (catchPhrases[user]!=null){
 		//Set regex to catch phrase for user if exists
-		catchPhraseRegex=new RegExp(`.*${getCatchPhrase(author)}.*`,"")
-		if(catchPhraseRegex.test(msg.content)){
-			msg.channel.send(getResponse(author))
+		catchPhraseRegex=new RegExp(`.*${getCatchPhrase(user)}.*`,"")
+		if(catchPhraseRegex.test(msg.content) && isNotSpam(user)){
+			sendCatchPhrase(user,msg.channel)
 		}
 		
 	}
