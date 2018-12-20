@@ -1,20 +1,26 @@
-
-
 # PhraseBot
 
 Phrase Bot is a discord bot that saves a phrase and a corresponding response. In the future if Phrase bot sees you using this phrase it responds with the pre-programmed response
 
 ## Usage
 
-Something something Node
-Something npm
-bla bla bla
+0. Read [this article]('https://www.devdungeon.com/content/javascript-discord-bot-tutorial').
+1. `git clone` this repository to your local.
+2. Run `npm install`.
+3. Create a file in the root directory called `auth.json` and paste your bot token in there.
+	
+    ```
+    {
+      "token": "YOUR_BOT_TOKEN_HERE"
+    }
+    ```
+  Do **not** commit `auth.json` or share your bot token.
+
+4. Run `node bot.js`. If it doesn't work, ask Chris what other files you need.
 
 ## Developing
 
-Something something Node
-Something npm
-bla bla bla
+Once again, read [this article]('https://www.devdungeon.com/content/javascript-discord-bot-tutorial').
 
 ### Tools
 
