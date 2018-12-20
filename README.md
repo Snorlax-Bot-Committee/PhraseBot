@@ -4,7 +4,7 @@ Phrase Bot is a discord bot that saves a phrase and a corresponding response. In
 
 ## Usage
 
-0. Read [this article]('https://www.devdungeon.com/content/javascript-discord-bot-tutorial').
+0. Read [this article](https://www.devdungeon.com/content/javascript-discord-bot-tutorial).
 1. `git clone` this repository to your local.
 2. Run `npm install`.
 3. Create a file in the root directory called `auth.json` and paste your bot token in there.
@@ -20,7 +20,7 @@ Phrase Bot is a discord bot that saves a phrase and a corresponding response. In
 
 ## Developing
 
-Once again, read [this article]('https://www.devdungeon.com/content/javascript-discord-bot-tutorial').
+Once again, read [this article](https://www.devdungeon.com/content/javascript-discord-bot-tutorial).
 
 ### Tools
 
