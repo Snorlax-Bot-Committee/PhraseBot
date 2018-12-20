@@ -6,7 +6,9 @@ const command_char='$';
 var catchPhrases=null;
 const catchPhraseFile="memory.json";
 //Sync will be issue with multi servers probably just do DB >_>
-saveRegex=/^save *["'](.*)["'] *["'](.*)["']$/
+saveRegex=/^save *["'](.*)["'] *["'](.*)["']$/;
+lmgtfyRegex=/^lmgtfy  *(.*)$/
+
 
 //TODO: add a function to escape regex
 
@@ -71,13 +73,18 @@ client.on('message', msg => {
 		
 		if(saveRegex.test(cmd)){
 			let match=saveRegex.exec(cmd);
-			console.log(match)
+			console.log('setCatchPhraseAndResponse')
 			//save catch phrase
 			setCatchPhraseAndResponse(author,match[1],match[2])
 		}
 		else if(cmd==="remove"){
 			//remove user and catch phrase
 			removeCatchPhrase(author)
+		}
+		else if(lmgtfyRegex.test(cmd)){
+			console.log(cmd)
+			let match=lmgtfyRegex.exec(cmd);
+			msg.channel.send(`http://lmgtfy.com/?q=${encodeURI(match[1])}`)
 		}
 	}
 	else if (catchPhrases[author]!=null){
