@@ -17,11 +17,17 @@ youtubeRegex=/^youtube *(.*)$/;
 
 //Reads Json in catchPhrases file to memory
 function readFile(){
-	return JSON.parse(fs.readFileSync(catchPhraseFile,'utf8'))
+	let temp=JSON.parse(fs.readFileSync(catchPhraseFile,'utf8'))
+	console.log(temp)
+	return temp
 }
 
 //Writes catchPhrase data object to catchPhraseFile listed above
 function saveFile(){
+	if (catchPhrases==null){
+		console.log("Not saving catchPhrases because it is null")
+		return
+	}
 	fs.writeFile(catchPhraseFile, JSON.stringify(catchPhrases), function(err) {
 	    if (err) {
 	        console.log(err);
@@ -49,16 +55,18 @@ function cleanCatchPhrase(input){
 	return cleaned_input
 }
 //Sets catchphrase and saves new catch phrase to memory
-function setCatchPhraseAndResponse(user,catchPhrase,response){
+function setCatchPhraseAndResponse(user,channel,catchPhrase,response){
 	console.log(`Setting catchPhrase/response for ${user} to ${catchPhrase} / ${response}`)
 	catchResponse={};
-	catchResponse['catchPhrase']=cleanCatchPhrase(catchPhrase);
+	let cleaned_phrase=cleanCatchPhrase(catchPhrase)
+	catchResponse['catchPhrase']=cleaned_phrase;
 	catchResponse['response']=response;
 	console.log(catchResponse)
 	catchPhrases[user]=catchResponse;
-
 	saveFile();
-
+	let message=`Your phrase and response have been saved \nPhrase: ${cleaned_phrase}\nResponse: ${response}`
+	channel.send(message)
+	
 }
 
 //Removes the user from file as currently user to catchphrase/response is 1:1
@@ -103,7 +111,8 @@ client.on('message', msg => {
 			let match=saveRegex.exec(cmd);
 			console.log('setCatchPhraseAndResponse')
 			//save catch phrase
-			setCatchPhraseAndResponse(user,match[1],match[2])
+			setCatchPhraseAndResponse(user,msg.author,match[1],match[2])
+
 		}
 		else if(cmd==="remove"){
 			//remove user and catch phrase
