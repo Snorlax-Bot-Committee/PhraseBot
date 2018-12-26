@@ -2,9 +2,11 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const client = new Discord.Client();
 const auth = require('./auth.json');
+const http = require('https')
 const command_char='$';
 var catchPhrases=null;
 const catchPhraseFile="memory.json";
+const youtube_video_url="https://www.youtube.com/watch?v="
 //Sync will be issue with multi servers probably just do DB >_>
 saveRegex=/^save *["'](.*)["'] *["'](.*)["']$/;
 lmgtfyRegex=/^lmgtfy  *(.*)$/
@@ -85,6 +87,24 @@ function sendCatchPhrase(user,channel){
 	console.log(`Sending the response to ${user}`) 
 	channel.send(getResponse(user))
 	
+}
+
+function search_youtube(channel,query){
+	let api_url="https://www.googleapis.com/youtube/v3/search?part=snippet"
+	let youtube_address=`${api_url}maxResults=1&q=${encodeURI(query)}&key=${auth.youtube}`
+	http.get(youtube_address, (resp) => {
+		let data='';
+		resp.on('data', (chunk) => {
+			data+=chunk
+		});
+		resp.on('end', () => {
+			let query_data=JSON.parse(data)
+			let youtube_video=youtube_video_url+query_data.items[0].id.videoId
+			channel.send(youtube_video);
+		}
+	}).on("error", (err) =>{
+		console.log("Error: " + err.message);	
+	});
 }
 
 client.on('ready', () => {
