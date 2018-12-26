@@ -7,3 +7,4 @@ package-lock.json
 .sublime-project
 .tern-project
 memory.json
+PhraseBot.service
